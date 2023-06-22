@@ -1,4 +1,4 @@
-﻿// Source and copyright: https://www.nimy.se/blog/azure-devops-release-retention-lock
+// Source and copyright: https://www.nimy.se/blog/azure-devops-release-retention-lock
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -81,8 +81,9 @@ internal class Program
 
                 while (leaseIds.Count > 0)
                 {
-                    //Join the lease Ids to a string for use in the delete call
-                    string slice = string.Join(",", leaseIds.Skip(batch * batchSize).Take(batchSize));
+                    //Take a slice of lease ids, comma-delimited to use in delete call
+                    string slice = string.Join(",", leaseIds.Take(batchSize));
+                    leaseIds.RemoveRange(0, batchSize);
 
                     //Delete all the leases in one call
                     string deleteUrl = $"_apis/build/retention/leases?ids={slice}&api-version=7.0";
