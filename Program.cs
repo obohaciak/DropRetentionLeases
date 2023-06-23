@@ -82,8 +82,9 @@ internal class Program
                 while (leaseIds.Count > 0)
                 {
                     //Take a slice of lease ids, comma-delimited to use in delete call
-                    string slice = string.Join(",", leaseIds.Take(batchSize));
-                    leaseIds.RemoveRange(0, batchSize);
+                    int takeX = Math.Min(leaseIds.Count, batchSize);
+                    string slice = string.Join(",", leaseIds.Take(takeX));
+                    leaseIds.RemoveRange(0, takeX);
 
                     //Delete all the leases in one call
                     string deleteUrl = $"_apis/build/retention/leases?ids={slice}&api-version=7.0";
@@ -91,7 +92,7 @@ internal class Program
 
                     if (deleteResponse.IsSuccessStatusCode)
                     {
-                        Console.WriteLine($"Deleted {batchSize} leases in batch {batch + 1}.");
+                        Console.WriteLine($"Deleted {takeX} leases in batch {batch + 1}.");
                     }
                     else
                     {
